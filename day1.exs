@@ -1,7 +1,6 @@
 defmodule Day1 do
-  def solve do
-    "data.txt"
-    |> File.read!()
+  def solve(filename) do
+    File.read!(filename)
     |> String.codepoints()
     |> List.foldl(0, fn n, s -> track(n, s) end)
   end
@@ -11,5 +10,5 @@ defmodule Day1 do
 
 end
 
-Day1.solve()
+Day1.solve("data.txt")
 |> IO.puts()
