@@ -8,12 +8,12 @@ defmodule Aoc2018.Day2 do
     end
 
     def checksum_parts(data) do
-        Enum.reduce(data, {0,0}, fn code, sum -> sum_results(code, sum) end)
+        Enum.reduce(data, {0,0}, fn box_id, result -> sum_results(box_id, result) end)
     end
 
-    defp sum_results(code, acc) do
-        count_dups_and_triplets(code)
-        |> update_sum(acc)
+    defp sum_results(box_id, result) do
+        count_dups_and_triplets(box_id)
+        |> update_sum(result)
     end
 
     defp update_sum({true, true}, {d, t}) do
@@ -32,8 +32,8 @@ defmodule Aoc2018.Day2 do
         {d, t + 1}
     end
 
-    def count_dups_and_triplets(str) do
-        groups_bigger_than_one = group_by_same_character(str)
+    def count_dups_and_triplets(box_id) do
+        groups_bigger_than_one = group_by_same_character(box_id)
         |> Enum.filter(fn x -> x > 1 end)
 
         contains_duplicates = contains_number(groups_bigger_than_one, 2)
