@@ -2,7 +2,7 @@ defmodule Aoc2018.Day2 do
     
     def part1() do
         {double, triple} = read_data()
-        |> checksum_parts()
+        |> doubles_and_triples()
 
         IO.puts("The answer is #{double * triple}")
     end
@@ -10,15 +10,15 @@ defmodule Aoc2018.Day2 do
     def part2() do
         id_list = read_data()
 
-        id = read_data()
-        |> Enum.reduce_while(id_list, fn box_id, list -> find_match(box_id, list) end)
+        result = read_data()
+        |> Enum.reduce_while(id_list, &find_match/2)
 
-        IO.puts("The answer is #{id}")
+        IO.puts("The answer is #{result}")
     end
 
     def find_match(id, list_of_ids) do
-        match_result = Enum.reduce_while(list_of_ids, {:none, id}, fn elem, acc -> test_for_matching_pair(elem, acc) end)
-        is_match(match_result, list_of_ids)
+        Enum.reduce_while(list_of_ids, {:none, id}, &test_for_matching_pair/2)
+        |> is_match(list_of_ids)
     end
 
     defp is_match({:none, _}, list_of_ids) do
@@ -29,14 +29,14 @@ defmodule Aoc2018.Day2 do
         {:halt, id}
     end
 
-    defp test_for_matching_pair(id1, {_, id_to_test}) do
-        common = common_parts(id1, id_to_test)
+    defp test_for_matching_pair(id1, {_, id2}) do
+        common = common_parts(id1, id2)
         length_diff = String.length(id1) - String.length(common)
-        is_match(length_diff, id_to_test, common)
+        is_match(length_diff, id2, common)
     end
 
 
-    defp is_match(1, id2, common) do
+    defp is_match(1, _, common) do
         {:halt, {:ok, common}}
     end
 
@@ -44,6 +44,10 @@ defmodule Aoc2018.Day2 do
         {:cont, {:none, id2}}
     end
 
+    @doc """
+    Returns a string that only contains the common characters in
+    both provided strings, keeping their order
+    """
     def common_parts(str_a, str_b) do
         a = String.codepoints(str_a)
         b = String.codepoints(str_b)
@@ -55,11 +59,11 @@ defmodule Aoc2018.Day2 do
     end
 
 
-    def checksum_parts(data) do
-        Enum.reduce(data, {0,0}, fn box_id, result -> sum_results(box_id, result) end)
+    def doubles_and_triples(data) do
+        Enum.reduce(data, {0,0}, &aggregate_doubles_and_triples/2)
     end
 
-    defp sum_results(box_id, result) do
+    defp aggregate_doubles_and_triples(box_id, result) do
         count_dups_and_triplets(box_id)
         |> update_sum(result)
     end
@@ -81,16 +85,15 @@ defmodule Aoc2018.Day2 do
     end
 
     def count_dups_and_triplets(box_id) do
-        groups_bigger_than_one = group_by_same_character(box_id)
-        |> Enum.filter(fn x -> x > 1 end)
+        groups = counts_of_same_chars(box_id)
 
-        contains_duplicates = contains_number(groups_bigger_than_one, 2)
-        contains_triplets = contains_number(groups_bigger_than_one, 3)
+        contains_duplicates = contains_number(groups, 2)
+        contains_triplets = contains_number(groups, 3)
 
         {contains_duplicates, contains_triplets}
     end
 
-    def group_by_same_character(code) do
+    def counts_of_same_chars(code) do
         code
         |> to_sorted_enum()
         |> Enum.chunk_by(fn x -> x end)
