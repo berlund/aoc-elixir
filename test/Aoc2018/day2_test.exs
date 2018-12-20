@@ -18,4 +18,15 @@ defmodule Day2Test do
     assert Day2.count_dups_and_triplets("abcccd") == {false, true}
     assert Day2.count_dups_and_triplets("abcccdd") == {true, true}
   end
+
+  test "gets common parts" do
+    assert Day2.common_parts("fghij", "fguij") == "fgij"
+  end
+
+  test "find match" do
+    data = ["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"]
+
+    result = Day2.find_match("", data)
+    IO.inspect()
+  end
 end
