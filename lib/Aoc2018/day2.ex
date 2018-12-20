@@ -10,15 +10,14 @@ defmodule Aoc2018.Day2 do
     def part2() do
         id_list = read_data()
 
-        read_data()
+        id = read_data()
         |> Enum.reduce_while(id_list, fn box_id, list -> find_match(box_id, list) end)
+
+        IO.puts("The answer is #{id}")
     end
 
     def find_match(id, list_of_ids) do
         match_result = Enum.reduce_while(list_of_ids, {:none, id}, fn elem, acc -> test_for_matching_pair(elem, acc) end)
-        # :ok -> :halt, id
-
-        IO.inspect match_result
         is_match(match_result, list_of_ids)
     end
 
@@ -30,7 +29,7 @@ defmodule Aoc2018.Day2 do
         {:halt, id}
     end
 
-    def test_for_matching_pair(id1, {_, id_to_test}) do
+    defp test_for_matching_pair(id1, {_, id_to_test}) do
         common = common_parts(id1, id_to_test)
         length_diff = String.length(id1) - String.length(common)
         is_match(length_diff, id_to_test, common)
